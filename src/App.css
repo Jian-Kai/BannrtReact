@@ -1,33 +1,92 @@
-.App {
-  text-align: center;
+.opened {
+  height: 300px;
+  width: 1200px;
+  overflow: hidden;
+  position: relative;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+.opening {
+  width: 1200px;
+  overflow: hidden;
+  position: relative;
+  animation-name: opening;
+  animation-duration: .6s;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.opening>a>img {
+  position: relative;
+  animation-name: openingI;
+  animation-duration: .6s;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
+@keyframes opening {
   from {
-    transform: rotate(0deg);
+      height: 80px;
   }
   to {
-    transform: rotate(360deg);
+      height: 300px;
   }
+}
+
+@keyframes openingI {
+  from {
+      top: -300px;
+  }
+  to {
+      top: 00px;
+  }
+}
+
+.closed {
+  height: 80px;
+  width: 1200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.closed>a>img {
+  position: relative;
+  top: -300px;
+}
+
+.closing{
+  width: 1200px;
+  overflow: hidden;
+  position: relative;
+  animation-name: closingB;
+  animation-duration: .6s;
+}
+
+.closing>a>img {
+  position: relative;
+  animation-name: closingI;
+  animation-duration: .6s;
+}
+
+@keyframes closingB{
+  from {
+      height: 300px;
+  }
+  to {
+      height: 80px;
+  }
+}
+
+@keyframes closingI{
+  from {
+      top: 0px;
+  }
+  to {
+      top: -300px;
+  }
+}
+
+.btn {
+  height: 20px;
+  width: 40px;
+  background: red;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  font-size: 10px;
 }
