@@ -33,42 +33,56 @@ class App extends React.Component {
         }
       },
       status: null,
-      banner: null
+      banner: null,
+      toggletimeout: null,
+      clicked: false,
     };
 
     this.clickEvent = this.clickEvent.bind(this);
-    //this.open = this.open.bind(this);
-    //this.close = this.close.bind(this);
+    this.open = this.open.bind(this);
+    this.close = this.close.bind(this);
   }
 
-  componentDidMount() {
-    const { openAtStart, bannerclass } = this.state.default;
-    this.setState({
+  async componentDidMount() {
+    const { openAtStart, bannerclass, autoToggle } = this.state.default;
+    await this.setState({
       status: openAtStart,
       banner: (openAtStart) ? bannerclass.opened : bannerclass.closed
     });
 
-    this.toggle();
+    const time = (typeof autoToggle === 'number') ? autoToggle : 500;
+    setTimeout(this.toggle.bind(this), time);
   }
 
-  toggle(){
-    const {autoToggle} = this.state.default;
+  toggle() {
+    const { autoToggle } = this.state.default;
+    const { status, clicked } = this.state;
     console.log("autoToggle : " + autoToggle);
-    
-    if(autoToggle){
+
+    if (autoToggle && !clicked) {
       //identify autoToggle ture or type of number
-      const time = (typeof autoToggle === 'number')? autoToggle : 500;
-      setTimeout(this.clickEvent, time);
-      
+      //const time = (typeof autoToggle === 'number') ? autoToggle : 500;
+      /*if (status) {
+        const timeout = setTimeout(this.close, time);
+        this.setState({ toggletimeout: timeout });
+      }
+      else{
+        const timeout = setTimeout(this.open, time);
+        this.setState({ toggletimeout: timeout });
+      }*/
+      (status) ? this.close() : this.open();
+      this.setState({ status: !status })
+
     }
   }
 
   clickEvent() {
     console.log("click")
-    const { status } = this.state;
-    //console.log(status);
+    const { status, clicked } = this.state;
+    console.log(status);
+    clearTimeout(this.toggletimeout);
     (status) ? this.close() : this.open();
-    this.setState({ status: !status })
+    this.setState({ status: !status, clicked: !clicked })
   }
 
   open() {
@@ -78,7 +92,7 @@ class App extends React.Component {
     if (transition) {
       //change status closed -> opening -> oopened
       this.setState({ banner: bannerclass.opening })
-      const interval = setInterval(whenTransition,20);
+      const interval = setInterval(whenTransition, 20);
       setTimeout(function () {
         this.setState({ banner: bannerclass.opened });
         clearInterval(interval);
@@ -96,7 +110,7 @@ class App extends React.Component {
     if (transition) {
       //change status oopened -> closing -> closed
       this.setState({ banner: bannerclass.closing });
-      const interval = setInterval(whenTransition,20);
+      const interval = setInterval(whenTransition, 20);
       setTimeout(function () {
         this.setState({ banner: bannerclass.closed });
         clearInterval(interval);
