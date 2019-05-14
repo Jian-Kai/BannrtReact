@@ -2,37 +2,17 @@ import React from 'react';
 import './App.css';
 import banner from './imgs/banner.png'
 
+import PropTypes from 'prop-types';
+
 class App extends React.Component {
 
   constructor(props) {
     super(props);
+    console.log(props)
+    const { option } = this.props
     this.state = {
-      default: {
-        // 設定一開始是否為開或合
-        openAtStart: true, // [boolean] true | false
-        // 設定啟動後是否要自動開或合，若設為false，就不要自勳開合；若為true是馬上自動開合；若為數字是幾毫秒之後開合
-        autoToggle: 3000, // [boolean|number] true | false | 3000
-        // 設定收合展開按鈕
-        button: {
-          closeText: '收合', // [string]
-          openText: '展開', // [string]
-          class: 'btn' // [string]
-        },
-        // 設定模組在各狀態時的class
-        bannerclass: {
-          closed: 'closed', // [string]
-          closing: 'closing', // [string]
-          opened: 'opened', // [string]
-          opening: 'opening' // [string]
-        },
-        // 是否要有transition效果
-        transition: true,
-        // 當有transition時，要執行的callback function
-        whenTransition: function () {
-          console.log('whenTransition');
-        }
-      },
-      status: null,
+      default: option,
+      status: option.openAtStart,
       banner: null,
       toggletimeout: null,
       clicked: false,
@@ -43,11 +23,10 @@ class App extends React.Component {
     this.close = this.close.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     const { openAtStart, bannerclass, autoToggle } = this.state.default;
-    await this.setState({
-      status: openAtStart,
-      banner: (openAtStart) ? bannerclass.opened : bannerclass.closed
+    this.setState({
+      banner: (openAtStart) ? "opened " + bannerclass.opened : "closed " + bannerclass.closed
     });
 
     const time = (typeof autoToggle === 'number') ? autoToggle : 500;
@@ -72,8 +51,8 @@ class App extends React.Component {
       }*/
       (status) ? this.close() : this.open();
       this.setState({ status: !status })
-
     }
+
   }
 
   clickEvent() {
@@ -91,50 +70,94 @@ class App extends React.Component {
 
     if (transition) {
       //change status closed -> opening -> oopened
-      this.setState({ banner: bannerclass.opening })
+      this.setState({ banner: "opening " + bannerclass.opening })
       const interval = setInterval(whenTransition, 20);
       setTimeout(function () {
-        this.setState({ banner: bannerclass.opened });
+        this.setState({ banner: "opened " + bannerclass.opened });
         clearInterval(interval);
       }.bind(this), 600);
     } else
       //change status closed -> oopened
-      this.setState({ banner: bannerclass.opened });
+      this.setState({ banner: "opened " + bannerclass.opened });
 
   }
 
-  close() {
+  close = () => {
     console.log("close")
     const { bannerclass, transition, whenTransition } = this.state.default;
 
     if (transition) {
       //change status oopened -> closing -> closed
-      this.setState({ banner: bannerclass.closing });
+      this.setState({ banner: "closing " + bannerclass.closing });
       const interval = setInterval(whenTransition, 20);
       setTimeout(function () {
-        this.setState({ banner: bannerclass.closed });
+        this.setState({ banner: "closed " + bannerclass.closed });
         clearInterval(interval);
       }.bind(this), 600);
     }
     else
       //change status oopened -> closing -> closed
-      this.setState({ banner: bannerclass.closed });
+      this.setState({ banner: "closed " + bannerclass.closed });
 
   }
 
   render() {
+    console.log(this.state)
     const { button } = this.state.default;
 
     const status = this.state.banner;
     const text = (this.state.status) ? button.closeText : button.openText;
+    const className = (this.state.status) ? 'btn' : 'btn changed';
     return (
       <div className={"banner " + status}>
         <a className="wrap" href="#" >
           <img className="img" src={banner} title="輸入廣告促銷說明文字" alt="輸入廣告促銷說明文字" />
-          <button className={button.class} onClick={this.clickEvent}>{text}</button>
         </a>
+        <div className={className + " " + button.class} onClick={this.clickEvent}>{text}</div>
       </div>
     );
+  }
+}
+
+App.propTypes = {
+  option: PropTypes.shape({
+    openAtStart: PropTypes.bool,
+    autoToggle: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+    bannerclass: PropTypes.shape({
+      opened: PropTypes.string,
+      closed: PropTypes.string,
+      opening: PropTypes.string,
+      closing: PropTypes.string,
+    }),
+    button: PropTypes.shape({
+      closeText: PropTypes.string,
+      openText: PropTypes.string,
+      class: PropTypes.string,
+    }),
+    transition: PropTypes.bool,
+    whenTransition: PropTypes.func
+  })
+};
+
+App.defaultProps = {
+  option: {
+    openAtStart: true,
+    autoToggle: true,
+    bannerclass: {
+      opened: '',
+      closed: '',
+      opening: '',
+      closing: '',
+    },
+    button: {
+      closeText: '',
+      openText: '',
+      class: ''
+    },
+    transition: true,
+    whenTransition: function () {
+      console.log('whenTransition');
+    }
   }
 }
 
